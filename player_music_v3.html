@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Music</title>
+  
+  <!-- Tabler Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <style>
+    *{
+      margin: 0;
+      padding: 0px;
+      box-sizing: border-box;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+    .pm-root {
+    --pm-gold-light: #E8CC85;
+    --pm-serif: 'Playfair Display', Georgia, serif;
+    --pm-sans: 'DM Sans', system-ui, sans-serif;
+    font-family: var(--pm-sans);
+    background: #0E0E0E;
+    color: #F5F0E8;
+    padding-bottom: 80px;
+      }
+    /* ─── NAV ─── */
+    .pm-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 0.5px solid #252525;
+    background: #0E0E0E;
+    position: sticky; top: 0; z-index: 10;
+      }
+    .pm-nav-links { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; }
+    .pm-nav-links li { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #888077; cursor: pointer; }
+    .pm-nav-links li:hover, .pm-nav-links li.active { color: #C9A84C; }
+    .pm-nav-cta { border-radius: 10px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; background: #C9A84C; color: #0E0E0E; border: 0.5px solid transparent; padding: 8px 18px; cursor: pointer; font-weight: 500; font-family: var(--pm-sans); }
+    .pm-nav-cta:hover {background: transparent;  color: #C9A84C; transition: all .2s ease; border: 0.5px solid #C9A84C; }
+    /* ─── LOGO SVG in NAV ─── */
+    .pm-logo-wrap { display: flex; align-items: center; }
+    /* ─── PAGES ─── */
+    .pm-page { display: none; }
+    .pm-page.active { display: block; }
+    /* ─── HERO ─── */
+    .pm-hero { min-height: 460px; height: 70vh; background: linear-gradient(160deg, #0E0E0E 0%, #241e0e 60%, #0E0E0E 100%); display: flex; align-items: center; padding: 60px 32px; position: relative; overflow: hidden; border-bottom: 0.5px solid #1e1e1e; }
+    
+    @keyframes float-outer {
+      0%   { transform: translate(0px, 0px); }
+      25%  { transform: translate(-12px, 8px); }
+      50%  { transform: translate(-6px, 16px); }
+      75%  { transform: translate(8px, 6px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
+    @keyframes float-inner {
+      0%   { transform: translate(0px, 0px); }
+      25%  { transform: translate(10px, -10px); }
+      50%  { transform: translate(4px, -18px); }
+      75%  { transform: translate(-8px, -6px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
+    .pm-hero::before {
+      content: '';
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 4px solid #C9A84C1a;
+      animation: float-outer 10s ease-in-out infinite;
+    }
+
+    .pm-hero::after {
+      content: '';
+      position: absolute;
+      right: 30px;
+      top: 30px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 2px solid #C9A84C12;
+      animation: float-inner 7s ease-in-out infinite;
+    }
+    
+    .pm-hero-text { max-width: 540px; position: relative; z-index: 2; }
+    .pm-eyebrow { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #C9A84C; margin-bottom: 16px; }
+    .pm-hero h1 { font-family: var(--pm-serif); font-size: 50px; font-weight: 700; line-height: 1.1; color: #F5F0E8; margin: 0 0 18px; }
+    .pm-hero h1 span { color: #C9A84C; }
+    .pm-hero-sub { font-size: 14px; color: #888077; line-height: 1.75; margin-bottom: 32px; max-width: 400px; }
+    .pm-btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .pm-btn-primary { border-radius: 10px; background: #C9A84C; color: #0E0E0E; border: 0.5px solid transparent; padding: 12px 26px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; font-weight: 500; font-family: var(--pm-sans); }
+    .pm-btn-primary:hover {background: transparent;  color: #C9A84C; transition: all .3s ease; border: 0.5px solid #C9A84C; }
+    .pm-btn-ghost { border-radius: 10px; background: transparent; color: #C9A84C; border: 0.5px solid #C9A84C; padding: 12px 26px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; font-weight: 500; font-family: var(--pm-sans); }
+    .pm-btn-ghost:hover {background: #C9A84C; color: #0E0E0E; border: 0.5px solid #C9A84C; transition: all .3s ease;}
+    .pm-section { padding: 52px 32px; }
+    .pm-section-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #C9A84C; margin-bottom: 8px; }
+    .pm-section-title { font-family: var(--pm-serif); font-size: 26px; font-weight: 400; color: #F5F0E8; margin: 0 0 28px; line-height: 1.3; }
+    .pm-divider { width: 40px; height: 0.5px; background: #C9A84C; margin: 10px 0 28px; }
+    .pm-product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; }
+    .pm-product-card { background: #1A1A1A; border: 0.5px solid #252525; cursor: pointer; }
+    .pm-product-card:hover { border-color: #C9A84C; }
+    .pm-product-img { width: 100%; aspect-ratio: 1; background: #2C2B28; display: flex; align-items: center; justify-content: center; font-family: var(--pm-serif); font-size: 32px; font-weight: 900; color: #3a3730; }
+    .pm-product-info { padding: 12px 14px; }
+    .pm-product-name { font-size: 13px; font-weight: 500; color: #F5F0E8; margin: 0 0 4px; }
+    .pm-product-price { font-size: 12px; color: #C9A84C; }
+    .pm-track-strip { background: #1A1A1A; border: 0.5px solid #252525; padding: 18px 22px; display: flex; align-items: center; gap: 16px; margin-bottom: 8px; cursor: pointer; }
+    .pm-track-strip:hover { border-color: #C9A84C; }
+    .pm-track-num { font-size: 11px; color: #888077; width: 14px; text-align: right; flex-shrink: 0; }
+    .pm-track-art { width: 38px; height: 38px; background: #2C2B28; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #C9A84C; }
+    .pm-track-meta { flex: 1; min-width: 0; }
+    .pm-track-title { font-size: 13px; font-weight: 500; color: #F5F0E8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pm-track-album { font-size: 11px; color: #888077; margin-top: 2px; }
+    .pm-track-year { font-size: 11px; color: #888077; flex-shrink: 0; }
+    .pm-new-badge { display: inline-block; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; background: #C9A84C; color: #0E0E0E; padding: 2px 7px; margin-left: 8px; vertical-align: middle; }
+    /* ─── SHOP ─── */
+    .pm-shop-header { background: #1A1A1A; border-bottom: 0.5px solid #252525; padding: 40px 32px 28px; }
+    .pm-filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+    .pm-filter-btn { border-radius: 8px;font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; background: transparent; color: #888077; border: 0.5px solid #333; padding: 7px 14px; cursor: pointer; font-family: var(--pm-sans); }
+    .pm-filter-btn:hover, .pm-filter-btn.active { border-color: #C9A84C; color: #C9A84C; }
+    .pm-shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; padding: 2px; background: #111; }
+    .pm-shop-item { background: #1A1A1A; cursor: pointer; position: relative; overflow: hidden; }
+    .pm-shop-item:hover .pm-shop-overlay { opacity: 1; }
+    .pm-shop-img { width: 100%; aspect-ratio: 0.85; background: #2C2B28; display: flex; align-items: center; justify-content: center; font-family: var(--pm-serif); font-size: 44px; font-weight: 900; color: #3a3730; position: relative; }
+    .pm-shop-overlay { position: absolute; inset: 0; background: rgba(14,14,14,0.72); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
+    .pm-shop-overlay-btn { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; background: #C9A84C; color: #0E0E0E; border: none; padding: 9px 20px; cursor: pointer; font-family: var(--pm-sans); font-weight: 500; }
+    .pm-shop-info { padding: 12px 14px 16px; }
+    .pm-shop-tag { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #C9A84C; margin-bottom: 5px; }
+    /* ─── ABOUT ─── */
+    .pm-about-hero { background: #1A1A1A; border-bottom: 0.5px solid #252525; padding: 56px 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    .pm-about-img-frame { aspect-ratio: 0.85; background: #2C2B28; border: 0.5px solid #3a3730; display: flex; align-items: center; justify-content: center; font-family: var(--pm-serif); font-size: 64px; font-weight: 900; color: #3a3730; position: relative; }
+    .pm-about-img-frame::before { content:''; position:absolute; inset:-8px; border:0.5px solid #C9A84C; opacity:0.28; }
+    .pm-about-quote { font-family: var(--pm-serif); font-size: 20px; font-weight: 400; color: #F5F0E8; line-height: 1.55; margin: 0 0 20px; font-style: italic; }
+    .pm-about-body { font-size: 14px; color: #888077; line-height: 1.8; margin: 0 0 14px; }
+    .pm-stat-row { display: flex; gap: 28px; margin-top: 28px; padding-top: 24px; border-top: 0.5px solid #252525; }
+    .pm-stat-num { font-family: var(--pm-serif); font-size: 26px; font-weight: 700; color: #C9A84C; }
+    .pm-stat-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #888077; margin-top: 2px; }
+    .pm-timeline { padding: 52px 32px; }
+    .pm-timeline-item { display: grid; grid-template-columns: 68px 1fr; gap: 22px; margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid #1e1e1e; }
+    .pm-timeline-year { font-family: var(--pm-serif); font-size: 13px; color: #C9A84C; font-weight: 700; padding-top: 2px; }
+    .pm-timeline-event { font-size: 14px; font-weight: 500; color: #F5F0E8; margin: 0 0 4px; }
+    .pm-timeline-detail { font-size: 12px; color: #888077; line-height: 1.6; }
+    /* ─── LISTEN ─── */
+    .pm-listen-hero { background: #1A1A1A; border-bottom: 0.5px solid #252525; padding: 48px 32px; }
+    .pm-platform-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+    .pm-platform-btn { display: flex; align-items: center; gap: 8px; background: #111; border: 0.5px solid #333; border-radius: 8px; color: #F5F0E8; padding: 10px 16px; font-size: 12px; font-family: var(--pm-sans); cursor: pointer; }
+    .pm-platform-btn:hover { border-color: #C9A84C; }
+    .pm-platform-btn i { color: #C9A84C; font-size: 16px; }
+    .pm-releases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+    .pm-release-card { background: #1A1A1A; border: 0.5px solid #252525; overflow: hidden; cursor: pointer; }
+    .pm-release-card:hover { border-color: #C9A84C; }
+    .pm-release-art { width: 100%; aspect-ratio: 1; background: #2C2B28; display: flex; align-items: center; justify-content: center; font-family: var(--pm-serif); font-size: 14px; font-weight: 700; color: #C9A84C; text-align: center; padding: 16px; line-height: 1.3; }
+    .pm-release-info { padding: 12px 14px; }
+    .pm-release-title { font-size: 14px; font-weight: 500; color: #F5F0E8; margin: 0 0 4px; }
+    .pm-release-meta { font-size: 11px; color: #888077; }
+    .pm-release-badge { display: inline-block; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; background: #C9A84C22; color: #C9A84C; border: 0.5px solid #C9A84C44; padding: 3px 8px; margin-top: 7px; }
+    .pm-podcast-card { background: #1A1A1A; border: 0.5px solid #252525; padding: 22px; margin-bottom: 10px; display: flex; gap: 18px; align-items: flex-start; cursor: pointer; }
+    .pm-podcast-card:hover { border-color: #C9A84C; }
+    .pm-podcast-thumb { width: 68px; height: 68px; flex-shrink: 0; background: #2C2B28; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #C9A84C; }
+    .pm-podcast-ep { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #C9A84C; margin-bottom: 4px; }
+    .pm-podcast-title { font-size: 14px; font-weight: 500; color: #F5F0E8; margin: 0 0 5px; line-height: 1.4; }
+    .pm-podcast-desc { font-size: 12px; color: #888077; line-height: 1.6; }
+    /* ─── FOOTER ─── */
+    .pm-footer { border-top: 0.5px solid #252525; padding: 28px 32px 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+    .pm-footer-copy { font-size: 11px; color: #888077; }
+    .pm-footer-links { display: flex; gap: 18px; }
+    .pm-footer-links span { font-size: 11px; color: #888077; cursor: pointer; }
+    .pm-footer-links span:hover { color: #C9A84C; }
+    /* ─── STICKY PLAYER BAR ─── */
+    .pm-player-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 68px;
+    background: #111111;
+    border-top: 0.5px solid #C9A84C44;
+    display: flex;
+    align-items: center;
+    padding: 0 20px 0 16px;
+    gap: 0;
+    z-index: 100;
+    box-sizing: border-box;
+      }
+    .pm-player-logo {
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+    padding-right: 18px;
+    border-right: 0.5px solid #2a2a2a;
+    margin-right: 18px;
+      }
+    .pm-player-logo-text {
+    font-family: var(--pm-serif);
+    font-size: 12px;
+    font-weight: 700;
+    color: #C9A84C;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.1;
+      }
+    .pm-player-logo-player{
+      font-family:'Playfair Display', Georgia, serif;
+      font-size: 19px; 
+      font-weight:700; 
+      color:#F5F0E8; 
+      letter-spacing:1.5px;
+      margin-bottom: 5px;
+    }
+    .pm-player-logo-music{
+      font-family:'DM Sans', system-ui, sans-serif;
+      font-size: 16px; 
+      font-weight:400; 
+      color:#C9A84C; 
+      letter-spacing:4px;
+    }
+    .pm-player-controls {
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0;
+      }
+    .pm-player-play-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background-color: #C9A84C;
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .pm-player-play-btn:hover {
+      transition: background-color .3s ease;
+      background-color: #E8CC85;
+    }
+    .pm-player-play-btn:active {
+      background-color: #fff;
+    }
+    .pm-player-play-btn i {
+    font-size: 16px;
+    color: #0E0E0E;
+      }
+    .pm-player-info {
+    flex: 1;
+    min-width: 0;
+    padding: 0 18px;
+    border-left: 0.5px solid #2a2a2a;
+    margin-left: 4px;
+      }
+    .pm-player-nowplaying-label {
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #C9A84C;
+    margin-bottom: 3px;
+      }
+    .pm-player-track-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #F5F0E8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+      }
+    .pm-player-source {
+    font-size: 10px;
+    color: #888077;
+    margin-top: 1px;
+      }
+    .pm-player-vol-section {
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+    padding-left: 18px;
+    border-left: 0.5px solid #2a2a2a;
+      }
+    .pm-player-vol-section i {
+    font-size: 16px;
+    color: #888077;
+      }
+    .pm-vol-slider {
+    width: 80px;
+    accent-color: #C9A84C;
+    cursor: pointer;
+      }
+    .pm-player-tabs {
+    display: flex;
+    gap: 0;
+    flex-shrink: 0;
+    padding-left: 18px;
+    border-left: 0.5px solid #2a2a2a;
+    margin-left: 4px;
+      }
+    .pm-player-tab {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888077;
+    padding: 6px 12px;
+    border: 0.5px solid #2a2a2a;
+    cursor: pointer;
+    background: transparent;
+    font-family: var(--pm-sans);
+    transition: all 0.15s;
+      }
+    .pm-player-tab:hover, .pm-player-tab.active {
+    color: #C9A84C;
+    border-color: #C9A84C;
+    background: #C9A84C11;
+      }
+    .pm-radio-note {
+    font-size: 10px;
+    color: #888077;
+    border-left: 0.5px solid #2a2a2a;
+    padding-left: 14px;
+    margin-left: 4px;
+    flex-shrink: 0;
+    max-width: 130px;
+    line-height: 1.4;
+    }
+    .pm-radio-note span { color: #C9A84C; display: block; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+    @keyframes spin {
+      0% {transform: rotate(0deg);}
+      50% {transform: rotate(180deg);}
+      100% {transform: rotate(360deg);}
+    }
+    .pm-vinyl{
+      transform-origin: center;
+      animation: spin 5s linear infinite;
+    }
+    /* ─────────────────────────────
+   SHEEN EFFECT
+───────────────────────────── */
+    .sheen {
+      position: relative;
+      overflow: hidden;
+    }
+    .sheen::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -75%;
+      width: 50%;
+      height: 200%;
+      background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(255, 255, 255, 0.18) 50%,
+        transparent 60%
+      );
+      transform: skewX(-15deg);
+      transition: left 0s;
+      pointer-events: none;
+    }
+    .sheen:hover::after {
+      left: 130%;
+      transition: left .8s ease;
+    }
+    @keyframes sheen-loop {
+      0%   { left: -75%; }
+      100% { left: 130%; }
+    }
+    .sheen-loop::after {
+      animation: sheen-loop 2.2s ease infinite;
+      animation-delay: 0.8s;
+    }
+
+    /* ─────────────────────────────
+       1. FADE-UP ON SCROLL
+    ───────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* stagger delay helpers */
+    .fade-up.delay-1 { transition-delay: 0.1s; }
+    .fade-up.delay-2 { transition-delay: 0.2s; }
+    .fade-up.delay-3 { transition-delay: 0.3s; }
+    .fade-up.delay-4 { transition-delay: 0.4s; }
+    .fade-up.delay-5 { transition-delay: 0.5s; }
+
+    /* ─────────────────────────────
+       2. NAV UNDERLINE SLIDE
+    ───────────────────────────── */
+    .pm-nav-links {
+      position: relative;
+    }
+    .pm-nav-links li {
+      position: relative;
+      padding-bottom: 3px;
+    }
+    .pm-nav-links li::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0%;
+      height: 1px;
+      background: #C9A84C;
+      transition: width 0.3s ease;
+    }
+    .pm-nav-links li:hover::after,
+    .pm-nav-links li.active::after {
+      width: 100%;
+    }
+
+    /* ─────────────────────────────
+       3. TRACK STRIP HOVER
+       Number slides out, play icon slides in
+    ───────────────────────────── */
+    .pm-track-strip {
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .pm-track-num {
+      position: relative;
+      overflow: hidden;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .pm-track-num-val {
+      display: block;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .pm-track-play-icon {
+      position: absolute;
+      right: 0;
+      font-size: 13px;
+      color: #C9A84C;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .pm-track-strip:hover .pm-track-num-val {
+      transform: translateY(-8px);
+      opacity: 0;
+    }
+    .pm-track-strip:hover .pm-track-play-icon {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─────────────────────────────
+       4. PRODUCT CARD LIFT
+    ───────────────────────────── */
+    .pm-product-card {
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .pm-product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 32px rgba(201, 168, 76, 0.08);
+    }
+
+    /* ─────────────────────────────
+       5. PAGE TRANSITION FADE
+    ───────────────────────────── */
+    .pm-page {
+      animation: none;
+    }
+    .pm-page.active {
+      animation: pageFadeIn 0.35s ease forwards;
+    }
+    @keyframes pageFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─────────────────────────────
+       6. COUNTER ANIMATION
+       Stat numbers count up when visible
+       (handled via JS, styles just ensure
+       the numbers don't jump layout)
+    ───────────────────────────── */
+    .pm-stat-num {
+      display: inline-block;
+      min-width: 2ch;
+    }
+
+    /* ==================== RESPONSIVENESS ==================== */
+    /* Small Mobile (< 480px) */
+    @media (max-width: 479px) {
+      .pm-nav { padding: 16px 20px; }
+      .pm-nav-links { gap: 16px; font-size: 10px; }
+      .pm-hero { min-height: 380px; padding: 40px 20px; }
+      .pm-hero h1 { font-size: 36px; }
+      .pm-hero-sub { font-size: 13px; }
+      .pm-section { padding: 40px 20px; }
+      .pm-section-title { font-size: 22px; }
+      .pm-product-grid, .pm-releases-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+      .pm-shop-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+      .pm-about-hero { grid-template-columns: 1fr; gap: 32px; }
+      .pm-timeline-item { grid-template-columns: 60px 1fr; gap: 16px; }
+      .pm-player-bar { height: 60px; padding: 0 12px; }
+      .pm-player-tabs { display: none; }
+      .pm-btn-row { flex-direction: column; align-items: stretch; }
+      .pm-footer { flex-direction: column; text-align: center; gap: 20px; }
+    }
+    /* Medium Mobile (480px - 767px) */
+    @media (min-width: 480px) and (max-width: 767px) {
+      .pm-hero h1 { font-size: 42px; }
+      .pm-section { padding: 48px 24px; }
+      .pm-product-grid, .pm-releases-grid { grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); }
+    }
+    /* Tablet (768px - 1023px) */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .pm-nav { padding: 18px 40px; }
+      .pm-hero { padding: 70px 40px; min-height: 500px; }
+      .pm-hero h1 { font-size: 48px; }
+      .pm-section { padding: 60px 40px; }
+      .pm-about-hero { gap: 40px; }
+    }
+    /* Laptop (1024px - 1440px) */
+    @media (min-width: 1024px) and (max-width: 1440px) {
+      .pm-hero h1 { font-size: 52px; }
+      .pm-section-title { font-size: 28px; }
+    }
+    /* Large Desktop & 4K (1440px+) */
+    @media (min-width: 1441px) {
+      .pm-hero { padding: 80px 80px; min-height: 580px; }
+      .pm-hero h1 { font-size: 58px; }
+      .pm-section { padding: 70px 80px; }
+      .pm-section-title { font-size: 32px; }
+      .pm-product-grid, .pm-shop-grid, .pm-releases-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+      .pm-nav { padding: 22px 80px; }
+    }
+    /* Extra wide 4K optimization */
+    @media (min-width: 2560px) {
+      .pm-hero h1 { font-size: 64px; }
+      .pm-section-title { font-size: 36px; }
+    }
+    /* General mobile improvements */
+    @media (max-width: 767px) {
+      .pm-btn-row { flex-direction: column; align-items: flex-start; }
+      .pm-footer { flex-direction: column; text-align: center; gap: 20px; }
+      .pm-player-info { padding: 0 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="pm-root">
+<!-- NAV -->
+<nav class="pm-nav">
+<div class="pm-logo-wrap">
+  <svg class="pm-vinyl" width="50" height="50" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="14" cy="14" r="11" stroke="#C9A84C" stroke-width="0.75"/>
+      <circle cx="14" cy="14" r="7" stroke="#C9A84C" stroke-width="0.5" stroke-dasharray="1.5 2"/>
+      <circle cx="14" cy="14" r="2.5" fill="#C9A84C" fill-opacity="0.2" stroke="#C9A84C" stroke-width="0.75"/>
+      <circle cx="14" cy="14" r="1" fill="#C9A84C"/>
+      <polygon points="12,11 12,17 18,14" fill="#C9A84C" opacity="0.9"/>
+    </svg>
+    <div class="pm-player-logo-text">
+      <p class="pm-player-logo-player">PLAYER</p>
+      <p class="pm-player-logo-music">Music</p>
+    </div>
+</div>
+<ul class="pm-nav-links">
+<li class="active" onclick="showPage('home',this)">Home</li>
+<li onclick="showPage('shop',this)">Shop</li>
+<li onclick="showPage('listen',this)">Music &amp; Podcast</li>
+<li onclick="showPage('about',this)">About</li>
+</ul>
+<button class="pm-nav-cta" onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">Shop Now</button>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="pm-page active">
+  <div class="pm-hero">
+      <div class="pm-hero-text">
+        <p class="pm-eyebrow">New Vintage · Sound &amp; Style</p>
+        <h1>Where the <span>music</span> meets the moment.</h1>
+        <p class="pm-hero-sub">Threads, sound, and culture curated for those who've always known good taste doesn't expire.</p>
+        <div class="pm-btn-row">
+        <button class="pm-btn-primary" onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">Shop the Collection</button>
+        <button class="pm-btn-ghost" onclick="showPage('listen',document.querySelector('.pm-nav-links li:nth-child(3)'))">Listen Now</button>
+      </div>
+    </div>
+  </div>
+  <div class="pm-section">
+    <p class="pm-section-label fade-up">New Arrivals</p>
+    <h2 class="pm-section-title fade-up delay-1">Fresh drops from the collection.</h2>
+    <div class="pm-divider fade-up delay-1"></div>
+    <div class="pm-product-grid">
+      <div class="pm-product-card sheen fade-up delay-2" onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">
+        <div class="pm-product-img">PM</div>
+        <div class="pm-product-info"><p class="pm-product-name">Player Music Tee — Vintage Black</p><p class="pm-product-price">$38.00</p></div>
+      </div>
+      <div class="pm-product-card sheen fade-up delay-3" onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">
+        <div class="pm-product-img">PM</div>
+        <div class="pm-product-info"><p class="pm-product-name">Gold Logo Crewneck</p><p class="pm-product-price">$72.00</p></div>
+      </div>
+      <div class="pm-product-card sheen fade-up delay-4" onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">
+        <div class="pm-product-img">PM</div>
+        <div class="pm-product-info"><p class="pm-product-name">Crown of Thorns Tour Tee</p><p class="pm-product-price">$44.00</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="pm-section" style="background:#1A1A1A;border-top:0.5px solid #252525;border-bottom:0.5px solid #252525;">
+  <p class="pm-section-label fade-up">Now Playing</p>
+  <h2 class="pm-section-title fade-up delay-1">Top tracks from Makkiah.</h2>
+  <div class="pm-divider fade-up delay-1"></div>
+  <div class="pm-track-strip fade-up delay-2"><span class="pm-track-num"><span class="pm-track-num-val">1</span><i class="ti ti-player-play pm-track-play-icon" aria-hidden="true"></i></span><div class="pm-track-art"><i class="ti ti-music" aria-hidden="true"></i></div><div class="pm-track-meta"><p class="pm-track-title">For Years</p><p class="pm-track-album">Crown of Thorns, Pt. 2</p></div><span class="pm-track-year">2026 <span class="pm-new-badge">New</span></span></div>
+  <div class="pm-track-strip fade-up delay-3"><span class="pm-track-num"><span class="pm-track-num-val">2</span><i class="ti ti-player-play pm-track-play-icon" aria-hidden="true"></i></span><div class="pm-track-art"><i class="ti ti-music" aria-hidden="true"></i></div><div class="pm-track-meta"><p class="pm-track-title">Dark Side — Remastered</p><p class="pm-track-album">Dark Side</p></div><span class="pm-track-year">2023</span></div>
+  <div class="pm-track-strip fade-up delay-4"><span class="pm-track-num"><span class="pm-track-num-val">3</span><i class="ti ti-player-play pm-track-play-icon" aria-hidden="true"></i></span><div class="pm-track-art"><i class="ti ti-music" aria-hidden="true"></i></div><div class="pm-track-meta"><p class="pm-track-title">NOBODY'S HOME</p><p class="pm-track-album">Broke or Something</p></div><span class="pm-track-year">2025</span></div>
+  <div class="pm-track-strip fade-up delay-5"><span class="pm-track-num"><span class="pm-track-num-val">4</span><i class="ti ti-player-play pm-track-play-icon" aria-hidden="true"></i></span><div class="pm-track-art"><i class="ti ti-music" aria-hidden="true"></i></div><div class="pm-track-meta"><p class="pm-track-title">Outtamymind</p><p class="pm-track-album">Crown of Thorns, Pt. 1</p></div><span class="pm-track-year">2025</span></div>
+  <div style="margin-top:22px;" class="fade-up delay-5"><button class="pm-btn-ghost" onclick="showPage('listen',document.querySelector('.pm-nav-links li:nth-child(3)'))">View All Releases →</button></div>
+  </div>
+  <div class="pm-footer">
+  <span class="pm-footer-copy">© 2026 Player Music. All rights reserved.</span>
+  <div class="pm-footer-links"><span onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">Shop</span><span onclick="showPage('listen',document.querySelector('.pm-nav-links li:nth-child(3)'))">Music</span><span onclick="showPage('about',document.querySelector('.pm-nav-links li:nth-child(4)'))">About</span></div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div id="page-shop" class="pm-page">
+<div class="pm-shop-header">
+<p class="pm-eyebrow fade-up">The Collection</p>
+<h1 style="font-family:var(--pm-serif);font-size:34px;font-weight:700;margin:8px 0 0;color:#F5F0E8;" class="fade-up delay-1">Player Music Shop</h1>
+<div class="pm-filter-row fade-up delay-2">
+<button class="pm-filter-btn active">All</button>
+<button class="pm-filter-btn">Tops</button>
+<button class="pm-filter-btn">Outerwear</button>
+<button class="pm-filter-btn">Accessories</button>
+<button class="pm-filter-btn">Vinyl &amp; Merch</button>
+</div>
+</div>
+<div class="pm-shop-grid">
+<div class="pm-shop-item sheen fade-up delay-1"><div class="pm-shop-img">PM<div class="pm-shop-overlay"><button class="pm-shop-overlay-btn">Quick Add</button></div></div><div class="pm-shop-info"><p class="pm-shop-tag">Tops</p><p class="pm-product-name">Player Music Tee — Vintage Black</p><p class="pm-product-price">$38.00</p></div></div>
+<div class="pm-shop-item sheen fade-up delay-2"><div class="pm-shop-img">PM<div class="pm-shop-overlay"><button class="pm-shop-overlay-btn">Quick Add</button></div></div><div class="pm-shop-info"><p class="pm-shop-tag">Tops</p><p class="pm-product-name">Gold Logo Crewneck</p><p class="pm-product-price">$72.00</p></div></div>
+<div class="pm-shop-item sheen fade-up delay-3"><div class="pm-shop-img">PM<div class="pm-shop-overlay"><button class="pm-shop-overlay-btn">Quick Add</button></div></div><div class="pm-shop-info"><p class="pm-shop-tag">Tops</p><p class="pm-product-name">Crown of Thorns Tour Tee</p><p class="pm-product-price">$44.00</p></div></div>
+<div class="pm-shop-item sheen fade-up delay-4"><div class="pm-shop-img">PM<div class="pm-shop-overlay"><button class="pm-shop-overlay-btn">Quick Add</button></div></div><div class="pm-shop-info"><p class="pm-shop-tag">Outerwear</p><p class="pm-product-name">Varsity Jacket — Gold &amp; Black</p><p class="pm-product-price">$148.00</p></div></div>
+<div class="pm-shop-item sheen fade-up delay-5"><div class="pm-shop-img">PM<div class="pm-shop-overlay"><button class="pm-shop-overlay-btn">Quick Add</button></div></div><div class="pm-shop-info"><p class="pm-shop-tag">Accessories</p><p class="pm-product-name">PM Fitted Cap — Black</p><p class="pm-product-price">$34.00</p></div></div>
+<div class="pm-shop-item sheen fade-up delay-5"><div class="pm-shop-img">PM<div class="pm-shop-overlay"><button class="pm-shop-overlay-btn">Quick Add</button></div></div><div class="pm-shop-info"><p class="pm-shop-tag">Vinyl &amp; Merch</p><p class="pm-product-name">Crown of Thorns — Limited Vinyl</p><p class="pm-product-price">$28.00</p></div></div>
+</div>
+<div class="pm-footer"><span class="pm-footer-copy">© 2026 Player Music. All rights reserved.</span><div class="pm-footer-links"><span onclick="showPage('home',document.querySelector('.pm-nav-links li:nth-child(1)'))">Home</span><span onclick="showPage('listen',document.querySelector('.pm-nav-links li:nth-child(3)'))">Music</span><span onclick="showPage('about',document.querySelector('.pm-nav-links li:nth-child(4)'))">About</span></div></div>
+</div>
+
+<!-- LISTEN -->
+<div id="page-listen" class="pm-page">
+<div class="pm-listen-hero">
+<p class="pm-eyebrow fade-up">Sound &amp; Frequency</p>
+<h1 style="font-family:var(--pm-serif);font-size:34px;font-weight:700;margin:8px 0 10px;color:#F5F0E8;" class="fade-up delay-1">Music &amp; Podcast</h1>
+<p style="font-size:14px;color:#888077;max-width:460px;line-height:1.75;" class="fade-up delay-2">All the music and conversations that move the culture. Stream directly or open in your platform of choice.</p>
+<div class="pm-platform-row fade-up delay-3">
+<button class="pm-platform-btn"><i class="ti ti-brand-spotify" aria-hidden="true"></i> Spotify</button>
+<button class="pm-platform-btn"><i class="ti ti-brand-apple" aria-hidden="true"></i> Apple Music</button>
+<button class="pm-platform-btn" onclick="switchPlayerTab('radio')"><i class="ti ti-radio" aria-hidden="true"></i> Radio.co Live</button>
+</div>
+</div>
+<div class="pm-section">
+<p class="pm-section-label fade-up">Discography</p>
+<h2 class="pm-section-title fade-up delay-1">Releases by Makkiah.</h2>
+<div class="pm-divider fade-up delay-1"></div>
+<div class="pm-releases-grid">
+<div class="pm-release-card fade-up delay-2"><div class="pm-release-art">Crown of Thorns, Pt. 2</div><div class="pm-release-info"><p class="pm-release-title">Crown of Thorns, Pt. 2</p><p class="pm-release-meta">EP · 2026</p><span class="pm-release-badge">Latest Release</span></div></div>
+<div class="pm-release-card fade-up delay-3"><div class="pm-release-art">Broke or Something</div><div class="pm-release-info"><p class="pm-release-title">Broke or Something</p><p class="pm-release-meta">Album · 2025</p></div></div>
+<div class="pm-release-card fade-up delay-4"><div class="pm-release-art">Crown of Thorns, Pt. 1</div><div class="pm-release-info"><p class="pm-release-title">Crown of Thorns, Pt. 1</p><p class="pm-release-meta">Album · 2025</p></div></div>
+<div class="pm-release-card fade-up delay-4"><div class="pm-release-art">Your High</div><div class="pm-release-info"><p class="pm-release-title">Your High</p><p class="pm-release-meta">Album · 2024</p></div></div>
+<div class="pm-release-card fade-up delay-5"><div class="pm-release-art">Dark Side</div><div class="pm-release-info"><p class="pm-release-title">Dark Side</p><p class="pm-release-meta">Album · 2023</p></div></div>
+</div>
+</div>
+<div class="pm-section" style="background:#1A1A1A;border-top:0.5px solid #252525;">
+<p class="pm-section-label fade-up">The Podcast</p>
+<h2 class="pm-section-title fade-up delay-1">Latest episodes.</h2>
+<div class="pm-divider fade-up delay-1"></div>
+<div class="pm-podcast-card fade-up delay-2"><div class="pm-podcast-thumb"><i class="ti ti-microphone" aria-hidden="true"></i></div><div><p class="pm-podcast-ep">Episode 12</p><p class="pm-podcast-title">Building a Sound: The Business Behind Independent Music</p><p class="pm-podcast-desc">A deep dive into running your own label, distributing independently, and staying true to the art while handling the business.</p></div></div>
+<div class="pm-podcast-card fade-up delay-3"><div class="pm-podcast-thumb"><i class="ti ti-microphone" aria-hidden="true"></i></div><div><p class="pm-podcast-ep">Episode 11</p><p class="pm-podcast-title">Punk, Soul, and Why Genre Rules Don't Apply Here</p><p class="pm-podcast-desc">We talk genre-blending, the artists who influenced the Player Music sound, and why defying categories is the whole point.</p></div></div>
+<div class="pm-podcast-card fade-up delay-4"><div class="pm-podcast-thumb"><i class="ti ti-microphone" aria-hidden="true"></i></div><div><p class="pm-podcast-ep">Episode 10</p><p class="pm-podcast-title">Crown of Thorns: The Story Behind the Project</p><p class="pm-podcast-desc">A candid conversation about the making of the Crown of Thorns series — the emotion, the process, and what comes next.</p></div></div>
+</div>
+<div class="pm-footer"><span class="pm-footer-copy">© 2026 Player Music. All rights reserved.</span><div class="pm-footer-links"><span onclick="showPage('home',document.querySelector('.pm-nav-links li:nth-child(1)'))">Home</span><span onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">Shop</span><span onclick="showPage('about',document.querySelector('.pm-nav-links li:nth-child(4)'))">About</span></div></div>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="pm-page">
+<div class="pm-about-hero">
+<div class="pm-about-img-frame fade-up">PM</div>
+<div>
+<p class="pm-eyebrow fade-up delay-1">Our Story</p>
+<p class="pm-about-quote fade-up delay-2">"Style is the armor you choose. Sound is the soul underneath."</p>
+<p class="pm-about-body fade-up delay-3">Player Music is a lifestyle brand built at the crossroads of sound and style. Born from a love of rock, soul, and punk — and a deep respect for the culture that made them — we exist for those who've always had taste that outpaced their era.</p>
+<p class="pm-about-body fade-up delay-4">We don't chase trends. We set the standard. Every piece in the collection, every track on the playlist, is a statement about moving through the world with intention and edge.</p>
+<div class="pm-stat-row fade-up delay-5">
+<div class="pm-stat"><p class="pm-stat-num" data-target="5" data-suffix="+">5+</p><p class="pm-stat-label">Years in business</p></div>
+<div class="pm-stat"><p class="pm-stat-num" data-target="23">23</p><p class="pm-stat-label">Releases</p></div>
+<div class="pm-stat"><p class="pm-stat-num" data-target="100" data-suffix="%">100%</p><p class="pm-stat-label">Independent</p></div>
+</div>
+</div>
+</div>
+<div class="pm-timeline">
+<p class="pm-section-label fade-up">The Journey</p>
+<h2 class="pm-section-title fade-up delay-1">Milestones.</h2>
+<div class="pm-divider fade-up delay-1"></div>
+<div class="pm-timeline-item fade-up delay-2"><span class="pm-timeline-year">2023</span><div><p class="pm-timeline-event">Dark Side — Debut Album</p><p class="pm-timeline-detail">Raw, honest, and unapologetically independent. Dark Side introduced the world to the Player Music sound.</p></div></div>
+<div class="pm-timeline-item fade-up delay-3"><span class="pm-timeline-year">2024</span><div><p class="pm-timeline-event">Your High — Album</p><p class="pm-timeline-detail">A deeper, more refined body of work exploring emotion, connection, and the highs of living fully.</p></div></div>
+<div class="pm-timeline-item fade-up delay-4"><span class="pm-timeline-year">2025</span><div><p class="pm-timeline-event">Crown of Thorns Pt. 1 &amp; Broke or Something</p><p class="pm-timeline-detail">Two projects, two perspectives. The Player Music brand expanded into apparel alongside the music.</p></div></div>
+<div class="pm-timeline-item fade-up delay-5" style="border-bottom:none;margin-bottom:0;padding-bottom:0;"><span class="pm-timeline-year">2026</span><div><p class="pm-timeline-event">Crown of Thorns, Pt. 2 — Latest EP</p><p class="pm-timeline-detail">The story continues. Pt. 2 closes the chapter with the standout track "For Years."</p></div></div>
+</div>
+<div class="pm-section" style="background:#1A1A1A;border-top:0.5px solid #252525;text-align:center;">
+<p class="pm-eyebrow fade-up" style="text-align:center;">Stay Connected</p>
+<h2 class="pm-section-title fade-up delay-1" style="text-align:center;">Join the Player Music world.</h2>
+<div class="pm-divider fade-up delay-1" style="margin:10px auto 28px;"></div>
+<div class="pm-btn-row fade-up delay-2" style="justify-content:center;">
+<button class="pm-btn-primary" onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">Shop the Collection</button>
+<button class="pm-btn-ghost" onclick="showPage('listen',document.querySelector('.pm-nav-links li:nth-child(3)'))">Stream the Music</button>
+</div>
+</div>
+<div class="pm-footer"><span class="pm-footer-copy">© 2026 Player Music. All rights reserved.</span><div class="pm-footer-links"><span onclick="showPage('home',document.querySelector('.pm-nav-links li:nth-child(1)'))">Home</span><span onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">Shop</span><span onclick="showPage('listen',document.querySelector('.pm-nav-links li:nth-child(3)'))">Music</span></div></div>
+</div>
+</div>
+
+<!-- ─── STICKY PLAYER BAR ─── -->
+<!--
+  RADIO.CO INTEGRATION NOTE:
+  When the client has a Radio.co station, add to <head>:
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://public.radio.co/playerapi/jquery.radiocoplayer.min.js"></script>
+  Then replace the hidden div below with:
+    <div class="radioplayer"
+      data-src="https://streaming.radio.co/YOUR_STATION_ID/listen"
+      data-autoplay="false"
+      data-playbutton="false"
+      data-volumeslider="false"
+      data-nowplaying="true"
+      data-showplayer="false"
+      data-volume="80">
+    </div>
+  And wire play/pause/volume to radiocoPlayer() methods:
+    $('.radioplayer').radiocoPlayer('play')
+    $('.radioplayer').radiocoPlayer('pause')
+    $('.radioplayer').radiocoPlayer('volume', 80)
+    $('.radioplayer').on('radioco:nowplaying', function(e, data){ ... })
+-->
+<div class="pm-player-bar" role="region" aria-label="Music player">
+<div class="pm-player-logo">
+<svg class="pm-vinyl" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<circle cx="14" cy="14" r="11" stroke="#C9A84C" stroke-width="0.75"/>
+<circle cx="14" cy="14" r="7" stroke="#C9A84C" stroke-width="0.5" stroke-dasharray="1.5 2"/>
+<circle cx="14" cy="14" r="2.5" fill="#C9A84C" fill-opacity="0.2" stroke="#C9A84C" stroke-width="0.75"/>
+<circle cx="14" cy="14" r="1" fill="#C9A84C"/>
+<polygon points="12,11 12,17 18,14" fill="#C9A84C" opacity="0.9"/>
+</svg>
+<div class="pm-player-logo-text">Player<br>Music</div>
+</div>
+<div class="pm-player-controls">
+<button class="pm-player-play-btn" id="playBtn" aria-label="Play" onclick="togglePlay()">
+<i class="ti ti-player-play" id="playIcon"></i>
+</button>
+</div>
+<div class="pm-player-info">
+<p class="pm-player-nowplaying-label" id="playerModeLabel">Now Playing</p>
+<p class="pm-player-track-name" id="playerTrackName">For Years — Makkiah</p>
+<p class="pm-player-source" id="playerSource">Crown of Thorns, Pt. 2 · 2026</p>
+</div>
+<div class="pm-player-tabs">
+<button class="pm-player-tab active" id="tab-music" onclick="switchPlayerTab('music')">Music</button>
+<button class="pm-player-tab" id="tab-radio" onclick="switchPlayerTab('radio')">Live Radio</button>
+<button class="pm-player-tab" id="tab-podcast" onclick="switchPlayerTab('podcast')">Podcast</button>
+</div>
+<div class="pm-player-vol-section">
+<i class="ti ti-volume" aria-hidden="true"></i>
+<input type="range" class="pm-vol-slider" id="volSlider" min="0" max="100" value="75" step="1" aria-label="Volume">
+</div>
+<div class="pm-radio-note">
+<span>Radio.co Ready</span>
+    Swap stream URL to go live
+</div>
+</div>
+
+<script>
+  /* ─── EXISTING FUNCTIONALITY (unchanged) ─── */
+  var isPlaying = false;
+  var modes = {
+    music:   { label: 'Now Playing',          track: 'For Years — Makkiah',                             source: 'Crown of Thorns, Pt. 2 · 2026' },
+    radio:   { label: 'Live Radio',            track: 'Player Music Radio',                              source: 'streaming.radio.co/your_station/listen' },
+    podcast: { label: 'Now Playing — Podcast', track: 'Ep. 12: The Business Behind Independent Music',  source: 'Player Music Podcast · Radio.co' }
+  };
+
+  function switchPlayerTab(mode) {
+    document.querySelectorAll('.pm-player-tab').forEach(function(t){ t.classList.remove('active'); });
+    var el = document.getElementById('tab-' + mode);
+    if (el) el.classList.add('active');
+    var m = modes[mode] || modes.music;
+    document.getElementById('playerModeLabel').textContent = m.label;
+    document.getElementById('playerTrackName').textContent = m.track;
+    document.getElementById('playerSource').textContent = m.source;
+    if (isPlaying) { isPlaying = false; updatePlayBtn(); }
+  }
+
+  function togglePlay() {
+    isPlaying = !isPlaying;
+    updatePlayBtn();
+  }
+
+  function updatePlayBtn() {
+    var icon = document.getElementById('playIcon');
+    icon.className = isPlaying ? 'ti ti-player-pause' : 'ti ti-player-play';
+  }
+
+  document.querySelectorAll('.pm-filter-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.pm-filter-btn').forEach(function(b){ b.classList.remove('active'); });
+      this.classList.add('active');
+    });
+  });
+
+  /* ─── 5. PAGE TRANSITION + fade-up reset ─── */
+  function showPage(id, navEl) {
+    document.querySelectorAll('.pm-page').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('.pm-nav-links li').forEach(function(l){ l.classList.remove('active'); });
+
+    var page = document.getElementById('page-' + id);
+    page.classList.add('active');
+    if (navEl) navEl.classList.add('active');
+
+    /* Reset fade-up elements on the newly shown page so they animate in fresh */
+    page.querySelectorAll('.fade-up').forEach(function(el){
+      el.classList.remove('is-visible');
+    });
+
+    document.querySelector('.pm-root').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    /* Trigger observer check after scroll lands */
+    setTimeout(function(){ checkFadeUps(); }, 400);
+
+    /* 6. Counter animation — run when about page is shown */
+    if (id === 'about') {
+      setTimeout(function(){ runCounters(); }, 600);
+    }
+  }
+
+  /* ─── 1. FADE-UP ON SCROLL ─── */
+  function checkFadeUps() {
+    var elements = document.querySelectorAll('.pm-page.active .fade-up');
+    elements.forEach(function(el) {
+      var rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 60) {
+        el.classList.add('is-visible');
+      }
+    });
+  }
+
+  /* Run on scroll */
+  window.addEventListener('scroll', checkFadeUps, { passive: true });
+
+  /* Run on load for above-fold content */
+  document.addEventListener('DOMContentLoaded', function(){
+    checkFadeUps();
+  });
+
+  /* ─── 6. COUNTER ANIMATION ─── */
+  function runCounters() {
+    document.querySelectorAll('.pm-stat-num[data-target]').forEach(function(el) {
+      var target = parseInt(el.getAttribute('data-target'), 10);
+      var suffix = el.getAttribute('data-suffix') || '';
+      var duration = 1200;
+      var start = 0;
+      var startTime = null;
+
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var progress = Math.min((timestamp - startTime) / duration, 1);
+        /* Ease out cubic */
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = Math.floor(eased * target);
+        el.textContent = current + suffix;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          el.textContent = target + suffix;
+        }
+      }
+      requestAnimationFrame(step);
+    });
+  }
+</script>
+
+</body>
+</html>
