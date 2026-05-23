@@ -39,11 +39,98 @@
     .pm-nav-cta:hover {background: transparent;  color: #C9A84C; transition: all .2s ease; border: 0.5px solid #C9A84C; }
     /* ─── LOGO SVG in NAV ─── */
     .pm-logo-wrap { display: flex; align-items: center; }
+
+    /* ─── HAMBURGER BUTTON ─── */
+    .pm-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      z-index: 201;
+    }
+    .pm-hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: #F5F0E8;
+      transition: all 0.28s ease;
+      transform-origin: center;
+    }
+    .pm-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .pm-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .pm-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ─── SLIDE-OUT DRAWER ─── */
+    .pm-drawer {
+      position: fixed;
+      top: 0; right: 0;
+      width: min(80vw, 300px);
+      height: 100vh;
+      background: #111;
+      border-left: 0.5px solid #252525;
+      z-index: 200;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 80px 32px 40px;
+      gap: 0;
+    }
+    .pm-drawer.open { transform: translateX(0); }
+
+    .pm-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 199;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .pm-drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    .pm-drawer-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .pm-drawer-links li {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #888077;
+      cursor: pointer;
+      padding: 16px 0;
+      border-bottom: 0.5px solid #1e1e1e;
+      transition: color 0.2s;
+    }
+    .pm-drawer-links li:hover,
+    .pm-drawer-links li.active { color: #C9A84C; }
+
+    .pm-drawer-cta {
+      margin-top: 32px;
+      border-radius: 10px;
+      background: #C9A84C;
+      color: #0E0E0E;
+      border: none;
+      padding: 13px 24px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      font-family: var(--pm-sans);
+      cursor: pointer;
+      align-self: flex-start;
+      transition: background 0.2s;
+    }
+    .pm-drawer-cta:hover { background: #E8CC85; }
+
     /* ─── PAGES ─── */
     .pm-page { display: none; }
     .pm-page.active { display: block; }
     /* ─── HERO ─── */
-    .pm-hero { min-height: 460px; height: 70vh; background: linear-gradient(160deg, #0E0E0E 0%, #241e0e 60%, #0E0E0E 100%); display: flex; align-items: center; padding: 60px 32px; position: relative; overflow: hidden; border-bottom: 0.5px solid #1e1e1e; }
+    .pm-hero { min-height: 460px; background: linear-gradient(160deg, #0E0E0E 0%, #241e0e 60%, #0E0E0E 100%); display: flex; align-items: center; padding: 60px 32px; position: relative; overflow: hidden; border-bottom: 0.5px solid #1e1e1e; }
     
     @keyframes float-outer {
       0%   { transform: translate(0px, 0px); }
@@ -315,6 +402,159 @@
     line-height: 1.4;
     }
     .pm-radio-note span { color: #C9A84C; display: block; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+
+    /* ─── MOBILE FAB PLAYER (< 840px) ─── */
+    .pm-fab-player { display: none; }
+
+    /* Desktop bar transition — slides down off screen as viewport narrows */
+    .pm-player-bar {
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.35s ease;
+    }
+
+    @media (max-width: 840px) {
+      /* Slide desktop player bar down out of view */
+      .pm-player-bar {
+        transform: translateY(100%);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* FAB fades in */
+      .pm-fab-player {
+        display: block;
+      }
+      @keyframes fabAppear {
+        from { opacity: 0; transform: scale(0.5); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+
+      /* FAB button */
+      .pm-fab-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        z-index: 301;
+        cursor: pointer;
+        transition: bottom 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fabAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both;
+      }
+      /* When sheet is open, FAB floats above the sheet */
+      .pm-fab-btn.sheet-open {
+        bottom: var(--pm-sheet-h, 300px);
+        transform: translateY(28px);
+      }
+      .pm-fab-btn-inner {
+        position: absolute;
+        inset: 5px;
+        background: #C9A84C;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+      .pm-fab-btn-inner:hover { background: #E8CC85; }
+      .pm-fab-btn-inner i { font-size: 20px; color: #0E0E0E; }
+      .pm-fab-svg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      /* Bottom sheet */
+      .pm-fab-sheet {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: #111;
+        border-top: 0.5px solid #C9A84C44;
+        border-radius: 20px 20px 0 0;
+        z-index: 299;
+        transform: translateY(100%);
+        transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 12px 20px 36px;
+      }
+      .pm-fab-sheet.open { transform: translateY(0); }
+
+      .pm-fab-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.65);
+        z-index: 298;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+      .pm-fab-overlay.open { opacity: 1; pointer-events: all; }
+
+      .pm-sheet-handle {
+        width: 36px; height: 3.5px;
+        background: #333; border-radius: 999px;
+        margin: 0 auto 18px;
+      }
+
+      .pm-sheet-track-row {
+        display: flex; align-items: center; gap: 14px;
+        margin-bottom: 18px;
+      }
+      .pm-sheet-art {
+        width: 48px; height: 48px;
+        background: #2C2B28; border-radius: 6px;
+        flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .pm-sheet-art i { font-size: 20px; color: #C9A84C; }
+      .pm-sheet-track-title { font-size: 14px; font-weight: 500; color: #F5F0E8; margin-bottom: 3px; }
+      .pm-sheet-track-sub { font-size: 11px; color: #888077; }
+
+      .pm-sheet-now-label {
+        font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+        color: #C9A84C; margin-bottom: 4px;
+      }
+
+      .pm-sheet-controls {
+        display: flex; align-items: center;
+        justify-content: center; gap: 28px;
+        margin-bottom: 20px;
+      }
+      .pm-sheet-play-btn {
+        width: 52px; height: 52px;
+        background: #C9A84C; border-radius: 50%;
+        border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s;
+      }
+      .pm-sheet-play-btn:hover { background: #E8CC85; }
+      .pm-sheet-play-btn i { font-size: 22px; color: #0E0E0E; }
+      .pm-sheet-ctrl-btn {
+        background: none; border: none; cursor: pointer; padding: 6px;
+      }
+      .pm-sheet-ctrl-btn i { font-size: 22px; color: #888077; }
+
+      .pm-sheet-tabs {
+        display: flex; gap: 8px;
+        margin-bottom: 16px;
+      }
+      .pm-sheet-tab {
+        flex: 1; text-align: center;
+        font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+        color: #888077; padding: 7px 0;
+        border: 0.5px solid #2a2a2a; border-radius: 6px;
+        background: transparent; cursor: pointer;
+        font-family: var(--pm-sans);
+        transition: all 0.15s;
+      }
+      .pm-sheet-tab:hover,
+      .pm-sheet-tab.active { color: #C9A84C; border-color: #C9A84C; background: #C9A84C11; }
+
+      .pm-sheet-vol {
+        display: flex; align-items: center; gap: 10px;
+      }
+      .pm-sheet-vol i { font-size: 16px; color: #888077; }
+      .pm-sheet-vol input { flex: 1; accent-color: #C9A84C; cursor: pointer; }
+    }
     @keyframes spin {
       0% {transform: rotate(0deg);}
       50% {transform: rotate(180deg);}
@@ -479,6 +719,31 @@
     }
 
     /* ==================== RESPONSIVENESS ==================== */
+    /* ─── HAMBURGER BREAKPOINT (< 700px) ─── */
+    @media (max-width: 700px) {
+      .pm-nav-links {
+        display: flex;
+        pointer-events: none;
+        opacity: 0;
+        position: absolute;
+      }
+      .pm-nav-cta {
+        display: flex;
+        pointer-events: none;
+        opacity: 0;
+        position: absolute;
+      }
+      .pm-hamburger {
+        display: flex;
+        animation: simpleFadeIn 0.3s ease forwards;
+      }
+      @keyframes simpleFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      .pm-nav { padding: 14px 20px; position: relative; }
+    }
+
     /* Small Mobile (< 480px) */
     @media (max-width: 479px) {
       .pm-nav { padding: 16px 20px; }
@@ -565,6 +830,21 @@
 <li onclick="showPage('about',this)">About</li>
 </ul>
 <button class="pm-nav-cta" onclick="showPage('shop',document.querySelector('.pm-nav-links li:nth-child(2)'))">Shop Now</button>
+<button class="pm-hamburger" id="pmHamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleDrawer()">
+  <span></span><span></span><span></span>
+</button>
+</nav>
+
+<!-- MOBILE DRAWER -->
+<div class="pm-drawer-overlay" id="pmDrawerOverlay" onclick="closeDrawer()"></div>
+<nav class="pm-drawer" id="pmDrawer" aria-label="Mobile navigation">
+  <ul class="pm-drawer-links">
+    <li onclick="showPage('home',null);closeDrawer()">Home</li>
+    <li onclick="showPage('shop',null);closeDrawer()">Shop</li>
+    <li onclick="showPage('listen',null);closeDrawer()">Music &amp; Podcast</li>
+    <li onclick="showPage('about',null);closeDrawer()">About</li>
+  </ul>
+  <button class="pm-drawer-cta" onclick="showPage('shop',null);closeDrawer()">Shop Now</button>
 </nav>
 
 <!-- HOME -->
@@ -648,7 +928,7 @@
 <div class="pm-platform-row fade-up delay-3">
 <button class="pm-platform-btn"><i class="ti ti-brand-spotify" aria-hidden="true"></i> Spotify</button>
 <button class="pm-platform-btn"><i class="ti ti-brand-apple" aria-hidden="true"></i> Apple Music</button>
-<button class="pm-platform-btn" onclick="switchPlayerTab('radio')"><i class="ti ti-radio" aria-hidden="true"></i> Radio.co Live</button>
+<button class="pm-platform-btn" onclick="switchTab('radio')"><i class="ti ti-radio" aria-hidden="true"></i> Radio.co Live</button>
 </div>
 </div>
 <div class="pm-section">
@@ -684,8 +964,8 @@
 <p class="pm-about-body fade-up delay-3">Player Music is a lifestyle brand built at the crossroads of sound and style. Born from a love of rock, soul, and punk — and a deep respect for the culture that made them — we exist for those who've always had taste that outpaced their era.</p>
 <p class="pm-about-body fade-up delay-4">We don't chase trends. We set the standard. Every piece in the collection, every track on the playlist, is a statement about moving through the world with intention and edge.</p>
 <div class="pm-stat-row fade-up delay-5">
-<div class="pm-stat"><p class="pm-stat-num" data-target="5" data-suffix="+">5+</p><p class="pm-stat-label">Years in business</p></div>
-<div class="pm-stat"><p class="pm-stat-num" data-target="23">23</p><p class="pm-stat-label">Releases</p></div>
+<div class="pm-stat"><p class="pm-stat-num" data-target="5" data-suffix="+">5+</p><p class="pm-stat-label">Years in music</p></div>
+<div class="pm-stat"><p class="pm-stat-num" data-target="6">6</p><p class="pm-stat-label">Releases</p></div>
 <div class="pm-stat"><p class="pm-stat-num" data-target="100" data-suffix="%">100%</p><p class="pm-stat-label">Independent</p></div>
 </div>
 </div>
@@ -756,9 +1036,9 @@
 <p class="pm-player-source" id="playerSource">Crown of Thorns, Pt. 2 · 2026</p>
 </div>
 <div class="pm-player-tabs">
-<button class="pm-player-tab active" id="tab-music" onclick="switchPlayerTab('music')">Music</button>
-<button class="pm-player-tab" id="tab-radio" onclick="switchPlayerTab('radio')">Live Radio</button>
-<button class="pm-player-tab" id="tab-podcast" onclick="switchPlayerTab('podcast')">Podcast</button>
+<button class="pm-player-tab active" id="tab-music" onclick="switchTab('music')">Music</button>
+<button class="pm-player-tab" id="tab-radio" onclick="switchTab('radio')">Live Radio</button>
+<button class="pm-player-tab" id="tab-podcast" onclick="switchTab('podcast')">Podcast</button>
 </div>
 <div class="pm-player-vol-section">
 <i class="ti ti-volume" aria-hidden="true"></i>
@@ -771,34 +1051,161 @@
 </div>
 
 <script>
-  /* ─── EXISTING FUNCTIONALITY (unchanged) ─── */
-  var isPlaying = false;
-  var modes = {
-    music:   { label: 'Now Playing',          track: 'For Years — Makkiah',                             source: 'Crown of Thorns, Pt. 2 · 2026' },
-    radio:   { label: 'Live Radio',            track: 'Player Music Radio',                              source: 'streaming.radio.co/your_station/listen' },
-    podcast: { label: 'Now Playing — Podcast', track: 'Ep. 12: The Business Behind Independent Music',  source: 'Player Music Podcast · Radio.co' }
+  /* ─── HAMBURGER DRAWER ─── */
+  function toggleDrawer() {
+    var drawer = document.getElementById('pmDrawer');
+    var overlay = document.getElementById('pmDrawerOverlay');
+    var btn = document.getElementById('pmHamburger');
+    var isOpen = drawer.classList.toggle('open');
+    overlay.classList.toggle('open', isOpen);
+    btn.classList.toggle('open', isOpen);
+    btn.setAttribute('aria-expanded', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+  function closeDrawer() {
+    var drawer = document.getElementById('pmDrawer');
+    var overlay = document.getElementById('pmDrawerOverlay');
+    var btn = document.getElementById('pmHamburger');
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    btn.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  /* ─── FAB SHEET ─── */
+  function toggleFabSheet() {
+    var sheet   = document.getElementById('fabSheet');
+    var overlay = document.getElementById('fabOverlay');
+    var fab     = document.getElementById('fabBtn');
+    var isOpen  = sheet.classList.toggle('open');
+    overlay.classList.toggle('open', isOpen);
+    if (isOpen) {
+      /* Measure sheet height after it becomes visible, set CSS var so FAB knows where to float */
+      requestAnimationFrame(function() {
+        var h = sheet.offsetHeight;
+        document.documentElement.style.setProperty('--pm-sheet-h', (h - 28) + 'px');
+        fab.classList.add('sheet-open');
+      });
+    } else {
+      fab.classList.remove('sheet-open');
+    }
+  }
+  function closeFabSheet() {
+    document.getElementById('fabSheet').classList.remove('open');
+    document.getElementById('fabOverlay').classList.remove('open');
+    document.getElementById('fabBtn').classList.remove('sheet-open');
+  }
+
+  /* ─── 2:30 DEMO TIMER + PROGRESS RING ─── */
+  var DEMO_DURATION = 150; /* 2 minutes 30 seconds */
+  var circumference = 150.796; /* 2 * PI * 24 */
+  var demoElapsed = 0;
+  var demoInterval = null;
+  var demoPlaying = false;
+
+  var sheetModes = {
+    music:   { label: 'Now Playing',          track: 'For Years — Makkiah', sub: 'Crown of Thorns, Pt. 2 · 2026' },
+    radio:   { label: 'Live Radio',            track: 'For Years — Makkiah', sub: 'Player Music Radio (demo)' },
+    podcast: { label: 'Now Playing — Podcast', track: 'For Years — Makkiah', sub: 'Player Music Podcast (demo)' }
   };
 
-  function switchPlayerTab(mode) {
-    document.querySelectorAll('.pm-player-tab').forEach(function(t){ t.classList.remove('active'); });
-    var el = document.getElementById('tab-' + mode);
-    if (el) el.classList.add('active');
-    var m = modes[mode] || modes.music;
-    document.getElementById('playerModeLabel').textContent = m.label;
-    document.getElementById('playerTrackName').textContent = m.track;
-    document.getElementById('playerSource').textContent = m.source;
-    if (isPlaying) { isPlaying = false; updatePlayBtn(); }
+  function setRingProgress(elapsed) {
+    var pct = Math.min(elapsed / DEMO_DURATION, 1);
+    var offset = circumference * (1 - pct);
+    var ring = document.getElementById('fabProgressRing');
+    if (ring) ring.setAttribute('stroke-dashoffset', offset.toFixed(3));
+  }
+
+  function startDemo() {
+    if (demoInterval) return;
+    demoInterval = setInterval(function() {
+      demoElapsed += 0.25;
+      setRingProgress(demoElapsed);
+      if (demoElapsed >= DEMO_DURATION) {
+        demoElapsed = DEMO_DURATION;
+        setRingProgress(demoElapsed);
+        clearInterval(demoInterval);
+        demoInterval = null;
+        demoPlaying = false;
+        updateAllPlayIcons();
+      }
+    }, 250);
+  }
+
+  function pauseDemo() {
+    clearInterval(demoInterval);
+    demoInterval = null;
+  }
+
+  function resetDemo() {
+    pauseDemo();
+    demoElapsed = 0;
+    demoPlaying = false;
+    setRingProgress(0);
+    updateAllPlayIcons();
   }
 
   function togglePlay() {
-    isPlaying = !isPlaying;
-    updatePlayBtn();
+    demoPlaying = !demoPlaying;
+    if (demoPlaying) {
+      if (demoElapsed >= DEMO_DURATION) { demoElapsed = 0; }
+      startDemo();
+    } else {
+      pauseDemo();
+    }
+    updateAllPlayIcons();
   }
 
-  function updatePlayBtn() {
-    var icon = document.getElementById('playIcon');
-    icon.className = isPlaying ? 'ti ti-player-pause' : 'ti ti-player-play';
+  function updateAllPlayIcons() {
+    var pauseClass = 'ti ti-player-pause';
+    var playClass  = 'ti ti-player-play';
+    var cls = demoPlaying ? pauseClass : playClass;
+    /* Desktop player */
+    var desktopIcon = document.getElementById('playIcon');
+    if (desktopIcon) desktopIcon.className = cls;
+    /* Sheet play button */
+    var sheetIcon = document.getElementById('sheetPlayIcon');
+    if (sheetIcon) sheetIcon.className = cls;
+    /* FAB icon */
+    var fabIcon = document.getElementById('fabBtnIcon');
+    if (fabIcon) fabIcon.className = demoPlaying ? pauseClass : 'ti ti-music';
   }
+
+  function switchTab(mode) {
+    /* Desktop tabs */
+    document.querySelectorAll('.pm-player-tab').forEach(function(t){ t.classList.remove('active'); });
+    var dt = document.getElementById('tab-' + mode);
+    if (dt) dt.classList.add('active');
+    /* Sheet tabs */
+    document.querySelectorAll('.pm-sheet-tab').forEach(function(t){ t.classList.remove('active'); });
+    var st = document.getElementById('stab-' + mode);
+    if (st) st.classList.add('active');
+    /* Update info */
+    var m = sheetModes[mode];
+    var sheetLabel = document.getElementById('sheetModeLabel');
+    var sheetTrack = document.getElementById('sheetTrackName');
+    var sheetSub   = document.getElementById('sheetTrackSub');
+    if (sheetLabel) sheetLabel.textContent = m.label;
+    if (sheetTrack) sheetTrack.textContent = m.track;
+    if (sheetSub)   sheetSub.textContent   = m.sub;
+    /* Desktop info */
+    var desktopLabel = document.getElementById('playerModeLabel');
+    var desktopTrack = document.getElementById('playerTrackName');
+    var desktopSrc   = document.getElementById('playerSource');
+    if (desktopLabel) desktopLabel.textContent = m.label;
+    if (desktopTrack) desktopTrack.textContent = m.track;
+    if (desktopSrc)   desktopSrc.textContent   = m.sub;
+  }
+
+  /* Wire the desktop play button to the same demo timer */
+  document.addEventListener('DOMContentLoaded', function() {
+    var desktopPlayBtn = document.getElementById('playBtn');
+    if (desktopPlayBtn) {
+      desktopPlayBtn.onclick = togglePlay;
+    }
+    checkFadeUps();
+  });
 
   document.querySelectorAll('.pm-filter-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
@@ -877,6 +1284,57 @@
     });
   }
 </script>
+
+<!-- ─── MOBILE FAB PLAYER ─── -->
+<div class="pm-fab-player">
+  <div class="pm-fab-overlay" id="fabOverlay" onclick="closeFabSheet()"></div>
+
+  <!-- FAB button with circular progress ring -->
+  <div class="pm-fab-btn" id="fabBtn" onclick="toggleFabSheet()" aria-label="Open music player">
+    <svg class="pm-fab-svg" width="56" height="56" viewBox="0 0 56 56" aria-hidden="true">
+      <circle cx="28" cy="28" r="24" fill="none" stroke="#2a2a2a" stroke-width="2.5"/>
+      <circle id="fabProgressRing" cx="28" cy="28" r="24" fill="none" stroke="#C9A84C" stroke-width="2.5"
+        stroke-dasharray="150.796" stroke-dashoffset="150.796"
+        stroke-linecap="round" transform="rotate(-90 28 28)"/>
+    </svg>
+    <div class="pm-fab-btn-inner">
+      <i class="ti ti-music" id="fabBtnIcon" aria-hidden="true"></i>
+    </div>
+  </div>
+
+  <!-- Bottom sheet -->
+  <div class="pm-fab-sheet" id="fabSheet">
+    <div class="pm-sheet-handle"></div>
+    <p class="pm-sheet-now-label" id="sheetModeLabel">Now Playing</p>
+    <div class="pm-sheet-track-row">
+      <div class="pm-sheet-art"><i class="ti ti-music" aria-hidden="true"></i></div>
+      <div>
+        <p class="pm-sheet-track-title" id="sheetTrackName">For Years — Makkiah</p>
+        <p class="pm-sheet-track-sub" id="sheetTrackSub">Crown of Thorns, Pt. 2 · 2026</p>
+      </div>
+    </div> 
+    <div class="pm-sheet-controls">
+      <button class="pm-sheet-ctrl-btn" aria-label="Previous" onclick="resetDemo()">
+        <i class="ti ti-player-skip-back" aria-hidden="true"></i>
+      </button>
+      <button class="pm-sheet-play-btn" id="sheetPlayBtn" aria-label="Play" onclick="togglePlay()">
+        <i class="ti ti-player-play" id="sheetPlayIcon" aria-hidden="true"></i>
+      </button>
+      <button class="pm-sheet-ctrl-btn" aria-label="Next" onclick="resetDemo()">
+        <i class="ti ti-player-skip-forward" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="pm-sheet-tabs">
+      <button class="pm-sheet-tab active" id="stab-music" onclick="switchTab('music')">Music</button>
+      <button class="pm-sheet-tab" id="stab-radio" onclick="switchTab('radio')">Live Radio</button>
+      <button class="pm-sheet-tab" id="stab-podcast" onclick="switchTab('podcast')">Podcast</button>
+    </div>
+    <div class="pm-sheet-vol">
+      <i class="ti ti-volume" aria-hidden="true"></i>
+      <input type="range" min="0" max="100" value="75" step="1" aria-label="Volume">
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
